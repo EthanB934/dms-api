@@ -1,5 +1,5 @@
 # Gives me access to Django's user model, can be extended
-from django.contrib.auth.models import User
+from dmsapp.models import StoreAsUser
 
 # Gives me access to Django REST frameworks's ViewSet to create custom views for handling client requests
 from rest_framework.viewsets import ViewSet
@@ -11,7 +11,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.response import Response
 
 # Gives me access to all of DRF's defined status codes to use in responses to clients
-from rest_framework import status
+from rest_framework import status, permissions
 
 # Allows me to create new subroutes for specific user requests
 from rest_framework.decorators import action
@@ -26,7 +26,7 @@ class UserSerializer(ModelSerializer):
     class Meta:
         """Required class by DRF's ModelSerializer. 
         Choose which models and which fields from that model to serialize."""
-        model = User
+        model = StoreAsUser
         fields = ("id", "email", "store_number", "store_name", "address")
 
 class UserViewSet(ViewSet):
@@ -36,13 +36,17 @@ class UserViewSet(ViewSet):
         ViewSet (class): A class inherited from rest framework. It comes with predefined methods
         used for supporting different HTTP commands
     """
-    @action(methods=["post"], url_path="register")
+    # Because of DRF's security measures, authorization is needed for all requests. 
+    # However, view set should not. A user is receiving the credentials needed for authorization in this view
+    permission_classes = [permissions.AllowAny]
 
+    @action(methods=["post"], detail=False, url_path="register")
+    
     # At end point /register, this defined method will process a client request to register a new user
     def register_user(self, request):
         """Method used to create new users"""
         # Instantiate a new User object
-        new_user = User()
+        new_user = StoreAsUser()
 
         try:
             # Extends properties of User object to include custom user fields

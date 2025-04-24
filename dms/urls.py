@@ -22,6 +22,8 @@ from django.urls import path, include
 # Allows routing client-sent API requests to views and methods
 from rest_framework import routers
 
+from dmsapp.views.user import UserViewSet
+
 # Assigns router with DefaultRouter, removing the need to use "/" after a given endpoint
 router = routers.DefaultRouter(trailing_slash=False)
 
@@ -31,6 +33,7 @@ urlpatterns = [
     path("", include(router.urls)),
 
     # This path will lead a request body to my register user method to create a new user object
+    path("register", UserViewSet.as_view({"post": "register_user"}), name="register"),
 
     # This path leads to the site administration interface
     path('admin/', admin.site.urls),
