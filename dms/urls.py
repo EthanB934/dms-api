@@ -15,8 +15,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
 
+# Include allows me to add new routes to the default router
+from django.urls import path, include
+
+# Allows routing client-sent API requests to views and methods
+from rest_framework import routers
+
+# Assigns router with DefaultRouter, removing the need to use "/" after a given endpoint
+router = routers.DefaultRouter(trailing_slash=False)
+
+# A list of specific paths that include methods as view sets and registered routes
 urlpatterns = [
+    # An empty string that will be reassigned to a new endpoint given by the request URL
+    path("", include(router.urls)),
+
+    # This path will lead a request body to my register user method to create a new user object
+
+    # This path leads to the site administration interface
     path('admin/', admin.site.urls),
 ]
