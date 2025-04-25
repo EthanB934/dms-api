@@ -1,0 +1,26 @@
+[
+    {
+        "model": "dmsapp.storeasuser",
+        "pk": 1,
+        "fields": {
+            "email": "store1@example.com",
+            "store_name": "Store One",
+            "store_number": 101,
+            "address": "123 Main Street, Cityville",
+            "password": "securepassword1",
+            "username": "store1@example.com"
+        }
+    },
+    {
+        "model": "dmsapp.storeasuser",
+        "pk": 2,
+        "fields": {
+            "email": "store2@example.com",
+            "store_name": "Store Two",
+            "store_number": 102,
+            "address": "456 Elm Street, Townsville",
+            "password": "securepassword2",
+            "username": "store2@example.com"
+        }
+    }
+]
