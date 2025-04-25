@@ -19,6 +19,9 @@ from rest_framework.authtoken.models import Token
 # Allows me to create new subroutes for specific user requests
 from rest_framework.decorators import action
 
+# Gives me access to a Django-provided method to authenticate users by certain credentials
+from django.contrib.auth import authenticate
+
 class UserSerializer(ModelSerializer):
     """A class that handles the serialization of user data, whether for saving to the database or 
     responding to the client with queried data
@@ -35,9 +38,9 @@ class UserSerializer(ModelSerializer):
         """Required class by DRF's ModelSerializer. 
         Choose which models and which fields from that model to serialize."""
 
-        
+    
         model = StoreAsUser
-        fields = ("id", "email", "store_number", "store_name", "address", "token")
+        fields = ("id", "email", "username", "store_number", "store_name", "address", "token")
 
 class UserViewSet(ViewSet):
     """A view used to handle new user registration. Supports POST requests
@@ -61,10 +64,11 @@ class UserViewSet(ViewSet):
         try:
             # Extends properties of User object to include custom user fields
             new_user.email = request.data["email"]
+            new_user.username = new_user.email
             new_user.store_number = request.data["storeNumber"]
             new_user.store_name = request.data["storeName"]
             new_user.address = request.data["address"]
-
+            new_user.password = request.data["password"]
             # Saves registering user's data to database
             new_user.save()
 
@@ -77,4 +81,31 @@ class UserViewSet(ViewSet):
              
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as ex:
-            return Response(f'There has been an issue registering this user: {ex.args[0]}', status=status.HTTP_400_BAD_REQUEST)
+            return Response(f'There has been an issue registering this user: {ex.args}', status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(methods=["post"], detail=False, url_path="login")
+    def login_user(self, request):  
+        """Method used to find user by their email and password"""
+        # Gets the login credentials from the request body
+        username = request.data.get("email")
+        password = request.data.get("password")
+
+        # Filters users to find user with credentials
+        user = StoreAsUser.objects.filter(username=username, password=password)[0]
+
+        # Does the user exist?
+        if user:
+            # Yes, get their token
+            token = Token.objects.get(user=user)
+
+            # Include it with their user data
+            user.token = token.key
+
+            # Serialize the data into desired pattern
+            serializer = UserSerializer(user, many=False, context={"token": token})
+
+            # Return JSON to requesting client
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        # No, there was an issue authenticating the user
+        return Response("There was an issue retrieving your user", status=status.HTTP_400_BAD_REQUEST)
+    
