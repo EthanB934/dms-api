@@ -14,6 +14,7 @@ class StoreAsUser(AbstractUser):
     store_name = models.CharField(max_length=100)
     store_number = models.IntegerField()
     address = models.CharField(max_length=255)
+    password = models.CharField(max_length=100)
     
     # Overwrites the save method of the AbstractUser given by Django
     # Accepts all arguments and keyword arguments as usual
