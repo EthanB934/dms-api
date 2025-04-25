@@ -34,6 +34,7 @@ urlpatterns = [
 
     # This path will lead a request body to my register user method to create a new user object
     path("register", UserViewSet.as_view({"post": "register_user"}), name="register"),
+    path("login", UserViewSet.as_view({"post": "login_user"}, name="login")),
 
     # This path leads to the site administration interface
     path('admin/', admin.site.urls),
