@@ -2,3 +2,4 @@ venv
 *sh
 *sqlite3
 *sh
+*.pyc
