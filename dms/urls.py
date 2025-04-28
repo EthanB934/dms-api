@@ -22,11 +22,12 @@ from django.urls import path, include
 # Allows routing client-sent API requests to views and methods
 from rest_framework import routers
 
-from dmsapp.views import UserViewSet, TypeViewSet
+from dmsapp.views import UserViewSet, TypeViewSet, CoolerViewSet
 
 # Assigns router with DefaultRouter, removing the need to use "/" after a given endpoint
 router = routers.DefaultRouter(trailing_slash=False)
 router.register("types", TypeViewSet, "type")
+router.register("coolers", CoolerViewSet, "cooler")
 
 # A list of specific paths that include methods as view sets and registered routes
 urlpatterns = [
