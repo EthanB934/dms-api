@@ -24,4 +24,4 @@ class CoolerViewSet(viewsets.ViewSet):
         # Serialize the cooler object. The client will require the cooler's id when creating doors
         serializer = CoolerSerializer(cooler, many=False)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
+
