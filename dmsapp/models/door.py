@@ -9,4 +9,4 @@ class Door(models.Model):
     @property
     def door_quantity(self):
         """Calculates the total quantity of doors by multiplying shelves and slots."""
-        return self.shelves * self.slots
+        return int(self.shelves) * int(self.slots)

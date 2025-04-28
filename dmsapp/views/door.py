@@ -1,6 +1,15 @@
 from rest_framework import serializers, viewsets, status
 from rest_framework.response import Response
 from dmsapp.models import Door, Type, Cooler
+from dmsapp.views.type import TypeSerializer
+
+class DoorSerializer(serializers.ModelSerializer):
+    
+    type = TypeSerializer(many=False)
+
+    class Meta:
+        model = Door
+        fields = ("id", "shelves", "slots", "cooler", "type", "door_quantity")
 
 class DoorViewSet(viewsets.ViewSet):
     """
@@ -30,6 +39,22 @@ class DoorViewSet(viewsets.ViewSet):
 
             # After I have assigned the request body data to the door object, I need to save that door
             door.save()
+
+            # Serializes the data into JSON for use in response
+            serializer = DoorSerializer(door, many=False)
+
+            # Respond to the client if the door was successfully created
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         # A store may not have a cooler before creating a door
-        except:
-            pass
+        except Exception as ex:
+            return Response(f"There was an issue while creating the door: {ex}", status=status.HTTP_400_BAD_REQUEST)
+        
+    def retrieve(self, request, pk):
+        # Gets all doors associated with the cooler the user clicked
+        doors = Door.objects.filter(cooler=pk)
+        
+        # Serializes the list of filtered doors into JSON for use in response
+        serializer = DoorSerializer(doors, many=True)
+
+        # Returns a response to the client with a JSON string of door objects
+        return Response(serializer.data, status=status.HTTP_200_OK)
