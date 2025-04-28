@@ -15,7 +15,7 @@ class StoreAsUser(AbstractUser):
     store_number = models.IntegerField()
     address = models.CharField(max_length=255)
     password = models.CharField(max_length=100)
-    
+    coolers = models.ManyToManyField("Cooler", related_name="stores")
     # Overwrites the save method of the AbstractUser given by Django
     # Accepts all arguments and keyword arguments as usual
     def save(self, *args, **kwargs):
