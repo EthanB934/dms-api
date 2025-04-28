@@ -25,3 +25,13 @@ class CoolerViewSet(viewsets.ViewSet):
         serializer = CoolerSerializer(cooler, many=False)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def list(self, request):
+        # Filters coolers by requesting authenticated user
+        coolers = Cooler.objects.filter(stores=request.auth.user)
+
+        # Serializes filtered list of coolers in JSON for use in response to client
+        serializer = CoolerSerializer(coolers, many=True)
+
+        # Returns serialized list of cooler objects as JSON to client
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
