@@ -58,3 +58,17 @@ class DoorViewSet(viewsets.ViewSet):
 
         # Returns a response to the client with a JSON string of door objects
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def update(self, request, pk):
+        door = Door.objects.get(pk=pk)
+        try:
+            door.shelves = request.data["shelves"]     
+            door.slots = request.data["slots"]
+            type = Type.objects.get(pk=request.data["typeId"])
+            door.type = type
+            cooler = Cooler.objects.get(pk=request.data["coolerId"])
+            door.cooler = cooler
+            door.save()
+            return Response(f"Door {pk} has been successfully updated", status=status.HTTP_200_OK)
+        except Exception as ex:
+            return Response(f"There has been an issue updating this cooler door: {ex}", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
