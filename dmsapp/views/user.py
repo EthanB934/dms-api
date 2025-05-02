@@ -91,7 +91,7 @@ class UserViewSet(ViewSet):
         password = request.data.get("password")
 
         # Filters users to find user with credentials
-        user = StoreAsUser.objects.filter(username=username, password=password)[0]
+        user = StoreAsUser.objects.filter(username=username, password=password).first()
 
         # Does the user exist?
         if user:
