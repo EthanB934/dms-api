@@ -72,3 +72,15 @@ class DoorViewSet(viewsets.ViewSet):
             return Response(f"Door {pk} has been successfully updated", status=status.HTTP_200_OK)
         except Exception as ex:
             return Response(f"There has been an issue updating this cooler door: {ex}", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def destroy(self, request, pk):
+        # Gets the door to be deleted
+        door = Door.objects.get(pk=pk)
+        try:
+            # Deletes door from database
+            door.delete()
+            return Response(f"Door {pk} was successfully deleted", status=status.HTTP_204_NO_CONTENT)
+        except Exception as ex:
+            # Responds to the client that the deletion process was successful
+            return Response(f"There was an error: {ex} deleting Door {pk}", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
