@@ -4,33 +4,20 @@ from rest_framework import serializers, status, viewsets
 from rest_framework.response import Response
 
 class CoolerSerializer(serializers.ModelSerializer):
-    cooler_types = serializers.SerializerMethodField()
-
-    def get_cooler_types(self, obj):
-        # Queries the doors table for the doors related to the cooler
-        doors = Door.objects.filter(cooler=obj.id)
-        types = []
-        # Returns the name of the product type offered by each door to be listed on the cooler
-        for door in doors:
-            # appends each door type to the types list
-            types.append(door.type)
-        # Serializes the types found in each for door per cooler
-        serializer = TypeSerializer(types, many=True)
-
-        # assigns the return value to the cooler_types
-        return serializer.data
 
     class Meta:
         model = Cooler
-        fields = ("id", "total_capacity", "cooler_types")
+        fields = ("id", "total_capacity", "types")
 
 class CoolerViewSet(viewsets.ViewSet):
     def create(self, request):
         # Instantiates a new cooler that the user wants to create
         cooler = Cooler()
-
-        # Creates the cooler in the database
         cooler.save()
+
+        type_ids = request.data.get("types", [])
+        cooler.types.set(type_ids)
+        # Creates the cooler in the database
 
         # Gets the requesting user creating the new cooler
         user = request.auth.user
@@ -52,3 +39,9 @@ class CoolerViewSet(viewsets.ViewSet):
         # Returns serialized list of cooler objects as JSON to client
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+    def retrieve(self, request, pk):
+        cooler = Cooler.objects.get(pk=pk)
+
+        serializer = CoolerSerializer(cooler, many=False)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
